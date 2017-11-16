@@ -1,12 +1,12 @@
-.divContainer {
+.container {
   width: 400px;
   height: 300px;
-  background-color: green;
   position:absolute;  
   font-size: 100%;
   transform-origin: center center;
   -webkit-transform-origin: center center;
   -ms-transform-origin: center center;
   transform-style: preserve-3D;
-
+  background-color: green;
+  border: black solid 2px;
 }

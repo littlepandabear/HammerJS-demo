@@ -1,12 +1,14 @@
-var test = new Draggable('#testCon',150,100);
+var test1 = new HammerContainer('#test1',100,100);
+var test2 = new HammerContainer('#test2',400,400);
 
-function Draggable(id,xpos,ypos){
+function HammerContainer(id,xpos,ypos){
     
     this.id = id;
 	this.x = xpos;
 	this.y = ypos;
    
-    var divContainer = document.querySelector(this.id);
+    var container = document.querySelector(this.id);
+	
 	
     var reqAnimationFrame = (function () {
     return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
@@ -14,18 +16,20 @@ function Draggable(id,xpos,ypos){
     };
     })();
 	
-	
+	var ALL_CONTAINERS = document.getElementsByClassName("container");
+
     var START_X = this.x;
     var START_Y = this.y;
     var START_SCALE = .5;
     var START_ANGLE = 0;
+	var START_zIndex = container.style.zIndex;
 	var minScale = .5;
 	var maxScale = 1;
     var ticking = false;
     var transform;
     var timer;
 	
-	var mc = new Hammer.Manager(divContainer,{
+	var mc = new Hammer.Manager(container,{
 		drag:true,
 		preventDefault: true
 	});
@@ -42,7 +46,8 @@ function Draggable(id,xpos,ypos){
 	mc.on("pinchstart pinchmove", onPinch);
 
 	mc.on("hammer.input", function(ev) {
-
+		bringToFront()	
+		
 	    if(ev.isFinal) {
 	
 			START_X = transform.translate.x;
@@ -51,26 +56,39 @@ function Draggable(id,xpos,ypos){
 			START_ANGLE = transform.angle;
 			console.log(START_SCALE);
 		    console.log(START_X,START_Y);
-	
-		    resetElement();
+			
+			console.log("containers",ALL_CONTAINERS.length)
+					
+			resetElement();
 
 	    }
 	});
-
+	
+	function bringToFront(){
+		
+		for( var i = 0; i < ALL_CONTAINERS.length; i++) {
+			
+			ALL_CONTAINERS[i].style.zIndex = i;
+			
+		    if(ALL_CONTAINERS[i] == container) {
+				container.style.zIndex = ALL_CONTAINERS.length; 
+		    } 
+		}
+	}
 
 	function resetElement() {		
 
 		if (START_X < 0){
 			START_X = -75;
-		}else if (START_X > window.innerWidth - divContainer.offsetWidth){
-			START_X = window.innerWidth - (divContainer.offsetWidth - 75);	
+		}else if (START_X > window.innerWidth - container.offsetWidth){
+			START_X = window.innerWidth - (container.offsetWidth - 75);	
 		} 
 
 
 		if (START_Y < 0){
 			START_Y = -50;
-		}else if (START_Y > window.innerHeight - divContainer.offsetHeight){
-			START_Y = window.innerHeight - (divContainer.offsetHeight - 50);	
+		}else if (START_Y > window.innerHeight - container.offsetHeight){
+			START_Y = window.innerHeight - (container.offsetHeight - 50);	
 		} 
 
 	    transform = {
@@ -92,11 +110,11 @@ function Draggable(id,xpos,ypos){
 	    ];
 
 	    value = value.join(" ");
-	    divContainer.style.webkitTransform = value;
-	    divContainer.style.mozTransform = value;
-	    divContainer.style.transform = value;
-		divContainer.style.webkitTransformOrigin ="center center"; 
-		divContainer.style.transformOrigin ="center center"; 
+	    container.style.webkitTransform = value;
+	    container.style.mozTransform = value;
+	    container.style.transform = value;
+		container.style.webkitTransformOrigin ="center center"; 
+		container.style.transformOrigin ="center center"; 
 	    ticking = false;
 
 	}
